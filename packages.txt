@@ -3,3 +3,6 @@ tensorflow
 dlib
 numpy
 pygame
+scipy 
+keras
+keras_preprocessing
