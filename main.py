@@ -24,7 +24,7 @@ sound = mixer.Sound('moan.wav')
 
 cap = cv2.VideoCapture(0)
 hog_face_detector = dlib.get_frontal_face_detector()
-dlib_facelandmark = dlib.shape_predictor("/Users/salahuddin/Desktop/Git_AI_Project/IOT-Driver-Alert-System/shape_predictor_68_face_landmarks.dat")
+dlib_facelandmark = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
 cap = cv2.VideoCapture(0)
 while True:
@@ -66,7 +66,7 @@ while True:
         EYE = (left_eye+right_eye)/2
         EYE = round(EYE,2)
         #telling the system what to do incase of an eye blink detected
-        if(EYE<0.26):
+        if(EYE<0.15):
             sleeping+=1
             drowsy=0
             active=0
