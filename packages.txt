@@ -6,3 +6,4 @@ pygame
 scipy 
 keras
 keras_preprocessing
+deepface
