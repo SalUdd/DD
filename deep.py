@@ -4,7 +4,7 @@ import numpy as np
 from deepface import DeepFace
 
 faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + './haarcascade_frontalface_default.xml')
-classifier =load_model('./Emotion_Detection.h5')
+#classifier =load_model('./Emotion_Detection.h5')
 
 cap = cv2.VideoCapture(0)
 
