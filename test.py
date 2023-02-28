@@ -12,7 +12,9 @@ classifier = load_model('./Emotion_Detection.h5')
 class_labels = ['Angry','Happy','Neutral','Sad','Surprise']
 
 cap = cv2.VideoCapture(0)
-
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320) 
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+cap.set(cv2.CAP_PROP_FPS, 1)
 
 
 while True:
