@@ -34,6 +34,9 @@ faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + './haarcascade_front
 #classifier =load_model('./Emotion_Detection.h5')
 
 cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320) 
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
+cap.set(cv2.CAP_PROP_FPS, 1)
 
 while True:
     # Grab a single frame of video
