@@ -9,9 +9,8 @@ from time import sleep
 from keras.utils.image_utils import img_to_array
 
 face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades +'./haarcascade_frontalface_default.xml')
-classifier = load_model('./Emotion_Detection.h5')
-
-class_labels = ['Angry','Happy','Neutral','Sad','Surprise']
+classifier = load_model('/home/salah/Desktop/DD-main/Emotion_Detection.h5')
+class_labels = ['Negative','Happy','Neutral','Negative','Surprise']
 
 def calculate_EYE(eye):
     A = distance.euclidean(eye[1], eye[5])
@@ -31,12 +30,14 @@ NrmEmo = 0
 
 #audio functions
 mixer.init()
-sound = mixer.Sound('moan.wav')
-sound2 = mixer.Sound('moan.wav')
+mixer.set_num_channels(4)
+sound = mixer.Sound('/home/salah/Desktop/DD-main/alert.wav')
+sound2 = mixer.Sound('/home/salah/Desktop/DD-main/sleepiness_alert.wav')
+sound3 = mixer.Sound('/home/salah/Desktop/DD-main/emotion_alert.wav')
 
 cap = cv2.VideoCapture(0)
 hog_face_detector = dlib.get_frontal_face_detector()
-dlib_facelandmark = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+dlib_facelandmark = dlib.shape_predictor("/home/salah/Desktop/DD-main/shape_predictor_68_face_landmarks.dat")
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 320)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 240)
 cap.set(cv2.CAP_PROP_FPS, 2)
@@ -90,25 +91,19 @@ while True:
             active = 0
             if sleeping > 24: #12 seconds
                 status = "sleepin S1"
-
-                if last_audio_sleeping != "S1" or not sound_playing:
-                    
-                    if sound.get_num_channels() == 0:
-                        sound.stop()
-                        sound.set_volume(1)
-                        sound.play()
-                    sound_playing = True
-                last_audio_sleeping = "S1"
+                mixer.Channel(0).stop()
+                if sound2.get_num_channels() == 0:
+                    mixer.Channel(1).set_volume(1)
+                    mixer.Channel(1).play(sound2)
             elif sleeping > 14: #7 seconds
                 status = "sleepin S2"
-                sound.set_volume(0.5)
+                mixer.Channel(0).set_volume(0.5)
             elif sleeping > 8: #4 seconds
                 status = "sleepin S3"                    
                 if sound.get_num_channels() == 0:
-                    sound.set_volume(0.1)
-                    sound.play()
-                sound_playing = True
-                last_audio_sleeping = "S3"
+                   
+                    mixer.Channel(0).set_volume(0.2)
+                    mixer.Channel(0).play(sound)
                 color = (255,0,0)
         else:
             drowsy = 0
@@ -116,7 +111,8 @@ while True:
             active += 1
             if active > 2:
                 status = "Active!"
-                sound.stop()
+                mixer.Channel(0).stop()
+                mixer.Channel(1).stop()
                 sound_playing = False
                 color = (0,0,255)
                 
@@ -137,7 +133,6 @@ while True:
             roi = np.expand_dims(roi,axis=0)
 
         # make a prediction on the ROI, then lookup the class
-
             preds = classifier.predict(roi)[0]
             print("\nprediction = ",preds)
             label=class_labels[preds.argmax()]
@@ -147,18 +142,13 @@ while True:
             if preds.argmax() in [0, 3]:
                 NegEmo+=1
                 if NegEmo > 2:
-                    if sound2.get_num_channels() == 0:
-                        sound2.play()
+                    if sound3.get_num_channels() == 0:
+                        mixer.Channel(2).play(sound3)
             elif preds.argmax() in [1, 2, 4]:
                 NrmEmo+=1
                 if NrmEmo > 2: 
-                    sound2.stop()
-            
-
-
+                    mixer.Channel(2).stop()
             cv2.putText(frame,label,label_position,cv2.FONT_HERSHEY_SIMPLEX,2,(0,255,0),3)
-            
-
         else:
             cv2.putText(frame,'No Face Found',(20,60),cv2.FONT_HERSHEY_SIMPLEX,2,(0,255,0),3)
         print("\n\n")
@@ -166,8 +156,6 @@ while True:
             
             
         cv2.imshow("Frame", frame)
-
-
 
     # Press Q on keyboard to  exit
     if cv2.waitKey(1) & 0xFF == ord('q'):
